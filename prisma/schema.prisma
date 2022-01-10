@@ -1,0 +1,148 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model employees {
+  id              Int                @id @default(autoincrement())
+  name            String             @db.VarChar(50)
+  mob_number      String             @db.VarChar(50)
+  category        String             @db.VarChar(50)
+  payment_date    DateTime           @default(now())
+  salary          salary_management?
+  attendence      attendances[]
+  bank_details_id bank_details?
+  join_date       DateTime           @default(now())
+  position        String             @db.VarChar(50)
+  address_line_1  String             @db.VarChar(50)
+  address_line_2  String             @db.VarChar(50)
+  pincode         String             @db.VarChar(50)
+  dob             DateTime           @default(now())
+  email_id        String             @unique
+  status          String             @db.VarChar(50)
+  company_id      Int
+  created_by      Int
+  modified_by     Int
+  created_at      DateTime           @default(now())
+  updated_at      DateTime           @default(now())
+}
+
+model users {
+  id          Int        @id @default(autoincrement())
+  name        String     @db.VarChar(50)
+  mob_number  String     @db.VarChar(50)
+  email_id    String     @db.VarChar(50)
+  language_id languages?
+  company_id  Int
+  created_at  DateTime   @default(now())
+  updated_at  DateTime   @default(now())
+}
+
+model companies {
+  id              Int      @id @default(autoincrement())
+  name            String   @db.VarChar(50)
+  category        String   @db.VarChar(50)
+  owner_name      String   @db.VarChar(50)
+  est_date        DateTime @default(now())
+  address_line_1  String   @db.VarChar(50)
+  address_line_2  String   @db.VarChar(50)
+  pincode         String   @db.VarChar(50)
+  status          String   @db.VarChar(50)
+  no_of_employees Int
+  email_id        String   @unique
+  created_by      Int
+  modified_by     Int
+  created_at      DateTime @default(now())
+  updated_at      DateTime @default(now())
+}
+
+model salary_management {
+  id          Int       @id @default(autoincrement())
+  employee    employees @relation(fields: [employee_id], references: [id])
+  employee_id Int       @unique
+  category    String    @db.VarChar(50)
+  salary      Int
+  status      String    @db.VarChar(50)
+  created_by  Int
+  modified_by Int
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @default(now())
+}
+
+model attendances {
+  id          Int       @id @default(autoincrement())
+  employee_id Int
+  date        DateTime  @default(now())
+  status      String    @db.VarChar(50)
+  employee    employees @relation(fields: [employee_id], references: [id])
+  created_by  Int
+  modified_by Int
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @default(now())
+}
+
+model bank_details {
+  id          Int       @id @default(autoincrement())
+  employee_id Int       @unique
+  employee    employees @relation(fields: [employee_id], references: [id])
+  acc_number  Int
+  bank_name   String    @db.VarChar(50)
+  branch_id   String    @db.VarChar(50)
+  ifsc_code   String    @db.VarChar(50)
+  status      String    @db.VarChar(50)
+  created_by  Int
+  modified_by Int
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @default(now())
+}
+
+model banks {
+  id          Int      @id @default(autoincrement())
+  name        String   @db.VarChar(50)
+  status      String   @db.VarChar(50)
+  created_by  Int
+  modified_by Int
+  created_at  DateTime @default(now())
+  updated_at  DateTime @default(now())
+}
+
+model salary_additions {
+  id              Int      @id @default(autoincrement())
+  salary_id       Int
+  date            DateTime @db.Date
+  addition_reason String   @db.VarChar(50)
+  amount          Int
+  created_by      Int
+  modified_by     Int
+  created_at      DateTime @default(now())
+  updated_at      DateTime @default(now())
+}
+
+model salary_deductions {
+  id               Int      @id @default(autoincrement())
+  salary_id        Int
+  date             DateTime @default(now())
+  deduction_reason String   @db.VarChar(50)
+  amount           Int
+  created_by       String   @db.VarChar(50)
+  modified_by      String   @db.VarChar(50)
+  created_at       DateTime @default(now())
+  updated_at       DateTime @default(now())
+}
+
+model languages {
+  id         Int      @id @default(autoincrement())
+  user       users    @relation(fields: [user_id], references: [id])
+  user_id    Int      @unique
+  name       String   @db.VarChar(50)
+  code       String   @db.VarChar(50)
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+}
